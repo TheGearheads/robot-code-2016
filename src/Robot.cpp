@@ -12,6 +12,7 @@ private:
 
 	void RobotInit() {
 		drive = Drive::GetInstance();
+		shooter = Shooter::GetInstance();
 	}
 
 	void AutonomousInit() {
@@ -24,7 +25,7 @@ private:
 	}
 
 	void TeleopPeriodic() {
-		drive->doDrive(stick->GetX(), stick->GetY());
+		//drive->doDrive(stick->GetX(), stick->GetY());
 		shooter->periodic();
 	}
 

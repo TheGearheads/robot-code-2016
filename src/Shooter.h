@@ -16,17 +16,21 @@ class Shooter {
 
 	CANTalon* left;
 	CANTalon* right;
-	CANTalon* lift;
-	Solenoid* piston;
+	CANTalon* pivot;
+	DoubleSolenoid* piston;
 	static Shooter* instance;
 	std::chrono::system_clock::time_point shooterTimeout;
-
+	Joystick* stick;
+	bool shootButtonPrev;
+	bool shootState;
+	bool intakeState;
+	bool fireButtonPrev;
 public:
 	Shooter();
 	void setSpeed(float speed);
-	void moveTo(float position);
+	void move(float position);
 	void fire();
-	void intake(); // automatically lower shooter and reverse wheels
+	void intake(bool on); // automatically lower shooter and reverse wheels
 	void periodic();
 
 	static Shooter* GetInstance();

@@ -9,10 +9,36 @@ Intake* Intake::GetInstance() {
 
 Intake::Intake() {
 	auto pref = Preferences::GetInstance();
-	enum MotorPos {kIntakeRoll, kIntakeLift};
-			const int CANIds[] = {40, 41};
-			rollMotor = new CANTalon(pref->GetInt("intake.roll", CANIds[kIntakeRoll]));
-			liftMotor = new CANTalon(pref->GetInt("intake.lift", CANIds[kIntakeLift]));
+	enum MotorPos {kIntakeRoll, kIntakePivotUp, kIntakePivotDown};
+	const int IDs[] = {40, 2, 3};
+	rollMotor = new CANTalon(pref->GetInt("intake.roll", IDs[kIntakeRoll]));
+	pivotPiston = new DoubleSolenoid(
+			pref->GetInt("intake.pivot.up", IDs[kIntakePivotUp]),
+			pref->GetInt("intake.pivot.down", IDs[kIntakePivotDown]));
+	stick = Joystick::GetStickForPort(1);
+	intakeButtonPrev = intakeState = pivotState = pivotButtonPrev = false;
+}
+
+void Intake::periodic() {
+	//auto pref = Preferences::GetInstance();
+	auto table = NetworkTable::GetTable("Intake");
+
+	if (!intakeButtonPrev && stick->GetRawButton(3) ){
+		intakeState = !intakeState;
+	}
+	intakeButtonPrev = stick->GetRawButton(3);
+	if (!pivotButtonPrev && stick->GetRawButton(4) ){
+		pivotState = !pivotState;
+	}
+	pivotButtonPrev = stick->GetRawButton(4);
+	if (!pivotState) {
+		intakeState = false;
+	}
+	Shooter::GetInstance()->intake(intakeState);
+	lift(pivotState);
+	roll(intakeState);
+	table->PutBoolean("pivot", pivotState);
+	table->PutBoolean("intake", intakeState);
 }
 
 void Intake::roll(bool on) {
@@ -24,9 +50,9 @@ void Intake::roll(bool on) {
 
 void Intake::lift(bool position) {
 	if(position)
-		liftMotor->Set(1);
+		pivotPiston->Set(DoubleSolenoid::kForward);
 	else
-		liftMotor->Set(-1);
+		pivotPiston->Set(DoubleSolenoid::kReverse);
 }
 
 Intake* Intake::instance = nullptr;

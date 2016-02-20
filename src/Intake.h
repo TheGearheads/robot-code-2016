@@ -10,19 +10,24 @@
 
 #include <string>
 #include "WPILib.h"
+#include "Shooter.h"
 
 class Intake {
 
 	CANTalon* rollMotor;
-	CANTalon* liftMotor;
-
+	DoubleSolenoid* pivotPiston;
+	bool intakeButtonPrev;
+	bool intakeState;
+	bool pivotState;
+	bool pivotButtonPrev;
 	static Intake* instance;
+	Joystick* stick;
 
 public:
 	Intake();
+	void periodic();
 	void roll(bool on);
 	void lift(bool position);
-	void doDrive(float x, float y);
 	static Intake* GetInstance();
 };
 
