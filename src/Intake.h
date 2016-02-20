@@ -13,6 +13,7 @@
 #include "Shooter.h"
 
 class Intake {
+	Intake();
 
 	CANTalon* rollMotor;
 	DoubleSolenoid* pivotPiston;
@@ -24,7 +25,6 @@ class Intake {
 	Joystick* stick;
 
 public:
-	Intake();
 	void periodic();
 	void roll(bool on);
 	void lift(bool position);

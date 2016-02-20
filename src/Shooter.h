@@ -13,6 +13,8 @@
 #include <chrono>
 
 class Shooter {
+private:
+	Shooter();
 
 	CANTalon* left;
 	CANTalon* right;
@@ -26,12 +28,12 @@ class Shooter {
 	bool intakeState;
 	bool fireButtonPrev;
 public:
-	Shooter();
 	void setSpeed(float speed);
 	void move(float position);
 	void fire();
 	void intake(bool on); // automatically lower shooter and reverse wheels
 	void periodic();
+	void enable(bool on);
 
 	static Shooter* GetInstance();
 };

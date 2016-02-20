@@ -1,5 +1,7 @@
 #include "Shooter.h"
 
+Shooter* Shooter::instance = nullptr;
+
 Shooter* Shooter::GetInstance() {
 	if (instance == nullptr) {
 			instance = new Shooter();
@@ -31,9 +33,9 @@ void Shooter::setSpeed(float speed) {
 	right->Set(speed);
 }
 
-void Shooter::move(float position) {
+void Shooter::move(float speed) {
 	auto pref = Preferences::GetInstance();
-	pivot->Set(pref->GetFloat("shooter.pivot.modifier", 0.3f) * position);
+	pivot->Set(pref->GetFloat("shooter.pivot.modifier", 0.3f) * speed);
 }
 
 void Shooter::periodic() {
@@ -42,15 +44,19 @@ void Shooter::periodic() {
 
 	if(std::chrono::system_clock::now()>shooterTimeout)
 		piston->Set(DoubleSolenoid::kReverse);
-	move(stick->GetY());
-	if (!shootButtonPrev && stick->GetRawButton(2) ){
-		shootState = !shootState;
+
+	if (RobotState::IsOperatorControl()){
+		move(stick->GetY());
+		if (!shootButtonPrev && stick->GetRawButton(2) ){
+			enable(!shootState);
+		}
+		shootButtonPrev = stick->GetRawButton(2);
+		if (!fireButtonPrev && stick->GetRawButton(1) ){
+			fire();
+		}
+		fireButtonPrev = stick->GetRawButton(1);
 	}
-	shootButtonPrev = stick->GetRawButton(2);
-	if (!fireButtonPrev && stick->GetRawButton(1) ){
-		fire();
-	}
-	fireButtonPrev = stick->GetRawButton(1);
+
 	if (intakeState){
 		setSpeed(pref->GetFloat("shooter.intake.speed", -0.1f));
 		shootState = false;
@@ -81,4 +87,6 @@ void Shooter::intake(bool on) {
 	intakeState = on;
 }
 
-Shooter* Shooter::instance = nullptr;
+void Shooter::enable(bool on) {
+	shootState = on;
+}

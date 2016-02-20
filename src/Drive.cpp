@@ -34,7 +34,7 @@ Drive::Drive() {
 }
 
 void Drive::doDrive(float x, float y) {
-	robotDrive->ArcadeDrive(x, y);
+	robotDrive->ArcadeDrive(x, -y);
 }
 
 Drive* Drive::instance = nullptr;

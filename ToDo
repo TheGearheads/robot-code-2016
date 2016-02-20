@@ -1,0 +1,12 @@
+HIGH PRIORITY:
+Lifter
+Vision
+Auton - TEST
+	Add more autons
+	Add a state system
+Intake - TEST
+Make all singleton constructors private -TEST
+Fix periodic method in all subsystems to handle auton and periodic states - TEST
+
+LOW PRIORITY:
+LED's

@@ -10,8 +10,10 @@
 
 #include <string>
 #include "WPILib.h"
+#include "Drive.h"
 
 class Drive {
+	Drive();
 
 	CANTalon* frontLeft;
 	CANTalon* midLeft;
@@ -23,7 +25,6 @@ class Drive {
 	static Drive* instance;
 
 public:
-	Drive();
 	void doDrive(float x, float y);
 	static Drive* GetInstance();
 };

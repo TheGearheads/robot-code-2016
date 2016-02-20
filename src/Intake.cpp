@@ -23,22 +23,24 @@ void Intake::periodic() {
 	//auto pref = Preferences::GetInstance();
 	auto table = NetworkTable::GetTable("Intake");
 
-	if (!intakeButtonPrev && stick->GetRawButton(3) ){
-		intakeState = !intakeState;
+	if (RobotState::IsOperatorControl()) {
+		if (!intakeButtonPrev && stick->GetRawButton(3) ){
+			intakeState = !intakeState;
+		}
+		intakeButtonPrev = stick->GetRawButton(3);
+		if (!pivotButtonPrev && stick->GetRawButton(4) ){
+			pivotState = !pivotState;
+		}
+		pivotButtonPrev = stick->GetRawButton(4);
+		if (!pivotState) {
+			intakeState = false;
+		}
+		Shooter::GetInstance()->intake(intakeState);
+		lift(pivotState);
+		roll(intakeState);
+		table->PutBoolean("pivot", pivotState);
+		table->PutBoolean("intake", intakeState);
 	}
-	intakeButtonPrev = stick->GetRawButton(3);
-	if (!pivotButtonPrev && stick->GetRawButton(4) ){
-		pivotState = !pivotState;
-	}
-	pivotButtonPrev = stick->GetRawButton(4);
-	if (!pivotState) {
-		intakeState = false;
-	}
-	Shooter::GetInstance()->intake(intakeState);
-	lift(pivotState);
-	roll(intakeState);
-	table->PutBoolean("pivot", pivotState);
-	table->PutBoolean("intake", intakeState);
 }
 
 void Intake::roll(bool on) {
