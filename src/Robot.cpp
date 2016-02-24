@@ -10,12 +10,13 @@ class Robot: public IterativeRobot
 private:
 	LiveWindow *lw = LiveWindow::GetInstance();
 	Auton* auton;
-	//Joystick* stick;
+	Joystick* stick;
 	Drive* drive;
 	Shooter* shooter;
 	Intake* intake;
 
 	void RobotInit() {
+		stick = Joystick::GetStickForPort(0);
 		auton = Auton::GetInstance();
 		drive = Drive::GetInstance();
 		shooter = Shooter::GetInstance();
@@ -37,8 +38,8 @@ private:
 	}
 
 	void TeleopPeriodic() {
-		//Comment the next line out to disable movement
-		//drive->doDrive(stick->GetX(), stick->GetY());
+		// Comment the next line out to disable movement
+		drive->doDrive(stick->GetX(), -stick->GetY());
 		intake->periodic();
 		shooter->periodic();
 	}

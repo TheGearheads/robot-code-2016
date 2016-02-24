@@ -46,19 +46,19 @@ void Shooter::periodic() {
 		piston->Set(DoubleSolenoid::kReverse);
 
 	if (RobotState::IsOperatorControl()){
-		move(stick->GetY());
+		move(-stick->GetY());
 		if (!shootButtonPrev && stick->GetRawButton(2) ){
 			enable(!shootState);
 		}
 		shootButtonPrev = stick->GetRawButton(2);
-		if (!fireButtonPrev && stick->GetRawButton(1) ){
+		if (!fireButtonPrev && stick->GetRawButton(1) && shootState){
 			fire();
 		}
 		fireButtonPrev = stick->GetRawButton(1);
 	}
 
 	if (intakeState){
-		setSpeed(pref->GetFloat("shooter.intake.speed", -0.1f));
+		setSpeed(pref->GetFloat("shooter.intake.speed", -0.4f));
 		shootState = false;
 	}else if (shootState){
 		setSpeed((stick->GetZ()));

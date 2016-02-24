@@ -10,8 +10,9 @@ Intake* Intake::GetInstance() {
 Intake::Intake() {
 	auto pref = Preferences::GetInstance();
 	enum MotorPos {kIntakeRoll, kIntakePivotUp, kIntakePivotDown};
-	const int IDs[] = {40, 2, 3};
+	const int IDs[] = {36, 2, 3};
 	rollMotor = new CANTalon(pref->GetInt("intake.roll", IDs[kIntakeRoll]));
+	rollMotor->SetInverted(true);
 	pivotPiston = new DoubleSolenoid(
 			pref->GetInt("intake.pivot.up", IDs[kIntakePivotUp]),
 			pref->GetInt("intake.pivot.down", IDs[kIntakePivotDown]));

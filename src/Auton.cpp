@@ -22,6 +22,7 @@ Auton::Auton() {
 	auto table = NetworkTable::GetTable("SmartDashboard");
 	table->PutStringArray("Auto List", autons);
 	drive = Drive::GetInstance();
+	shooter = Shooter::GetInstance();
 	timer.Start(); //This should be the last line in the constructor
 }
 
@@ -34,11 +35,27 @@ void Auton::reset() {
 //Should NOT be called in TeleopPeriodic. Only in AutonomousPeriodic
 void Auton::periodic() {
 		//Drive forward
-		if (autonMode == autons[0]){
+		if (autonMode == autons[0]) {
 			if (timer.HasPeriodPassed(0.5)) {
 				drive->doDrive(0,0);
 			} else {
 				drive->doDrive(0,0.5);
+			}
+		}
+		//Drive and shoot
+		else if (autonMode == autons[1]) {
+			if (timer.HasPeriodPassed(3)) {
+				drive->doDrive(0,0);
+			}
+			else if (timer.HasPeriodPassed(2)) {
+				shooter->enable(false);
+				drive->doDrive(0,0.5);
+			}
+			else if (timer.HasPeriodPassed(1)){
+				shooter->fire();
+			}
+			else {
+				shooter->enable(true);
 			}
 		}
 		else { //If no auton is found stop the robot just in case and put an error in the smart dashboard

@@ -22,8 +22,9 @@ private:
 	static Auton* instance;
 
 	Drive* drive;
+	Shooter* shooter;
 	std::string autonMode;
-	std::string autons[1] = {"Drive Forward"};
+	std::string autons[2] = {"Drive Forward", "Drive and Shoot"};
 	Timer timer;
 public:
 	void reset();
