@@ -27,9 +27,14 @@ private:
 	bool shootState;
 	bool intakeState;
 	bool fireButtonPrev;
+	float prevPos;
 public:
 	void setSpeed(float speed);
-	void move(float position);
+	void move(float speed);
+	double potToAngle(double pot);
+	double angleToPot(double angle);
+	double getAngle();
+	void moveTo(float position);
 	void fire();
 	void intake(bool on); // automatically lower shooter and reverse wheels
 	void periodic();

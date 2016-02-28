@@ -14,6 +14,7 @@ private:
 	Drive* drive;
 	Shooter* shooter;
 	Intake* intake;
+	CameraServer* cameraserver;
 
 	void RobotInit() {
 		stick = Joystick::GetStickForPort(0);
@@ -21,8 +22,10 @@ private:
 		drive = Drive::GetInstance();
 		shooter = Shooter::GetInstance();
 		intake = Intake::GetInstance();
+		cameraserver = CameraServer::GetInstance();
+		cameraserver->StartAutomaticCapture();
+		lw->SetEnabled(true);
 	}
-
 	void AutonomousInit() {
 		auton->reset();
 	}
@@ -42,6 +45,7 @@ private:
 		drive->doDrive(stick->GetX(), -stick->GetY());
 		intake->periodic();
 		shooter->periodic();
+		lw->Run();
 	}
 
 	void TestPeriodic() {

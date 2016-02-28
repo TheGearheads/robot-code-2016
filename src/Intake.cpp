@@ -17,7 +17,8 @@ Intake::Intake() {
 			pref->GetInt("intake.pivot.up", IDs[kIntakePivotUp]),
 			pref->GetInt("intake.pivot.down", IDs[kIntakePivotDown]));
 	stick = Joystick::GetStickForPort(1);
-	intakeButtonPrev = intakeState = pivotState = pivotButtonPrev = false;
+	intakeButtonPrev = pivotButtonPrev = false;
+	intakeState = pivotState = rollState = false;
 }
 
 void Intake::periodic() {
@@ -25,22 +26,27 @@ void Intake::periodic() {
 	auto table = NetworkTable::GetTable("Intake");
 
 	if (RobotState::IsOperatorControl()) {
-		if (!intakeButtonPrev && stick->GetRawButton(3) ){
+
+		if (!intakeButtonPrev && stick->GetRawButton(4) ){
 			intakeState = !intakeState;
+			pivotState = intakeState;
 		}
-		intakeButtonPrev = stick->GetRawButton(3);
-		if (!pivotButtonPrev && stick->GetRawButton(4) ){
+		intakeButtonPrev = stick->GetRawButton(4);
+
+		if (!pivotButtonPrev && stick->GetRawButton(5) ){
 			pivotState = !pivotState;
 		}
-		pivotButtonPrev = stick->GetRawButton(4);
-		if (!pivotState) {
-			intakeState = false;
-		}
+		pivotButtonPrev = stick->GetRawButton(5);
+
+		rollState = pivotState && intakeState;
+
 		Shooter::GetInstance()->intake(intakeState);
 		lift(pivotState);
-		roll(intakeState);
+		roll(rollState);
+
 		table->PutBoolean("pivot", pivotState);
 		table->PutBoolean("intake", intakeState);
+		table->PutBoolean("roll", rollState);
 	}
 }
 

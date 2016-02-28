@@ -21,6 +21,7 @@ class Intake {
 	bool intakeState;
 	bool pivotState;
 	bool pivotButtonPrev;
+	bool rollState;
 	static Intake* instance;
 	Joystick* stick;
 
