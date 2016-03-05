@@ -20,6 +20,9 @@ Auton* Auton::GetInstance() {
 
 Auton::Auton() {
 	auto table = NetworkTable::GetTable("SmartDashboard");
+	autons[0] = "Drive Forward";
+	autons[1] = "Do Nothing";
+	autons[2] = "Spy Shoot";
 	table->PutStringArray("Auto List", autons);
 	drive = Drive::GetInstance();
 	shooter = Shooter::GetInstance();
@@ -43,7 +46,8 @@ void Auton::periodic() {
 			switch (state) {
 			case 0:
 				drive->doDrive(0,0.5);
-				if (timer.HasPeriodPassed(0.75)) {
+
+				if (timer.HasPeriodPassed(2)) {
 					state++;
 				}
 				break;
@@ -51,9 +55,9 @@ void Auton::periodic() {
 				drive->doDrive(0,0);
 			}
 		}
-		//Drive and shoot
+		// Do nothing
 		else if (autonMode == autons[1]) {
-			DriverStation::ReportError("Drive and Shoot not implemented");
+			//DriverStation::ReportError("Drive and Shoot not implemented");
 			/*
 			if (timer.HasPeriodPassed(3)) {
 				drive->doDrive(0,0);

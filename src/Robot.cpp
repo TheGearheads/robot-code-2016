@@ -4,6 +4,7 @@
 #include "Drive.h"
 #include "Intake.h"
 #include "Shooter.h"
+#include "Camera.h"
 
 class Robot: public IterativeRobot
 {
@@ -14,7 +15,7 @@ private:
 	Drive* drive;
 	Shooter* shooter;
 	Intake* intake;
-	CameraServer* cameraserver;
+	Camera* camera;
 
 	void RobotInit() {
 		stick = Joystick::GetStickForPort(0);
@@ -22,10 +23,10 @@ private:
 		drive = Drive::GetInstance();
 		shooter = Shooter::GetInstance();
 		intake = Intake::GetInstance();
-		cameraserver = CameraServer::GetInstance();
-		cameraserver->StartAutomaticCapture();
-		lw->SetEnabled(true);
+		camera = Camera::GetInstance();
+		//lw->SetEnabled(true);
 	}
+
 	void AutonomousInit() {
 		auton->reset();
 	}

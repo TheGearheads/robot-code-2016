@@ -24,7 +24,7 @@ private:
 	Drive* drive;
 	Shooter* shooter;
 	std::string autonMode;
-	std::string autons[3] = {"Drive Forward", "Drive and Shoot", "Spy Shoot"};
+	std::string autons[3];
 	Timer timer;
 	int state;
 public:
