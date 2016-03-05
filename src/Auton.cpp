@@ -79,7 +79,7 @@ void Auton::periodic() {
 			switch (state) {
 			case 0://enables shooter
 				shooter->enable(true);
-				if (timer.HasPeriodPassed(1)){
+				if (timer.HasPeriodPassed(3)){
 					state++;
 				}
 				break;

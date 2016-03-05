@@ -34,6 +34,12 @@ Drive::Drive() {
 }
 
 void Drive::doDrive(float x, float y) {
+	if (RobotState::IsOperatorControl()){
+		if (Joystick::GetStickForPort(0)->GetRawButton(1)) {
+			auto pref = Preferences::GetInstance();
+			x *= pref->GetFloat("drive.turnModifier", 0.5f);
+		}
+	}
 	robotDrive->ArcadeDrive(x, -y);
 }
 

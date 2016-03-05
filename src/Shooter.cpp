@@ -93,7 +93,11 @@ void Shooter::periodic() {
 		setSpeed(pref->GetFloat("shooter.intake.speed", -0.4f));
 		shootState = false;
 	}else if (shootState){
-		setSpeed(pref->GetFloat("shooter.speed", 1.0f));
+		if (stick->GetRawButton(8)) {
+			setSpeed(pref->GetFloat("shoot.speedSlow", 0.5f));
+		} else {
+			setSpeed(pref->GetFloat("shooter.speed", 1.0f));
+		}
 	}else {
 		setSpeed(0);
 	}
