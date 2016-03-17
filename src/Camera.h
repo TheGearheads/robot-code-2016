@@ -1,31 +1,23 @@
-/*
- * Camera.h
- *
- *  Created on: Mar 4, 2016
- *      Author: Gearhead
- */
+#pragma once
 
-#ifndef SRC_CAMERA_H_
-#define SRC_CAMERA_H_
+#include <unordered_map>
 
 #include "WPILib.h"
 #include "tables/ITable.h"
 #include "tables/ITableListener.h"
 
-
-class Camera : public ITableListener {
+class Camera : public ITableListener, public USBCamera {
 private:
-	std::shared_ptr<USBCamera> camera;
-	CameraServer* server;
-	static Camera* instance;
 	std::shared_ptr<NetworkTable> m_table;
-	Camera();
-	~Camera();
 public:
+	static std::unordered_map<std::string, IMAQdxCameraInformation> camInfo;
+	static uint16_t cameraCount;
+	Camera(std::string name);
+	~Camera();
+	virtual std::string GetName();
 	void ValueChanged(ITable* source, llvm::StringRef key,
-	                    std::shared_ptr<nt::Value> value, bool isNew) override;
+			std::shared_ptr<nt::Value> value, bool isNew) override;
 	void UpdateSettings();
-	static Camera* GetInstance();
+	static int EnumerateCameras();
 };
 
-#endif /* SRC_CAMERA_H_ */

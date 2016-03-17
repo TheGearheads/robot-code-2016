@@ -4,7 +4,7 @@
 #include "Drive.h"
 #include "Intake.h"
 #include "Shooter.h"
-#include "Camera.h"
+#include "CameraSystem.h"
 
 class Robot: public IterativeRobot
 {
@@ -15,7 +15,7 @@ private:
 	Drive* drive;
 	Shooter* shooter;
 	Intake* intake;
-	Camera* camera;
+	CameraSystem* camSystem;
 
 	void RobotInit() {
 		stick = Joystick::GetStickForPort(0);
@@ -23,7 +23,7 @@ private:
 		drive = Drive::GetInstance();
 		shooter = Shooter::GetInstance();
 		intake = Intake::GetInstance();
-		camera = Camera::GetInstance();
+		camSystem = CameraSystem::GetInstance();
 		//lw->SetEnabled(true);
 	}
 
@@ -46,7 +46,7 @@ private:
 		drive->doDrive(stick->GetX(), -stick->GetY());
 		intake->periodic();
 		shooter->periodic();
-		lw->Run();
+		camSystem->periodic();
 	}
 
 	void TestPeriodic() {

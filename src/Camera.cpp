@@ -1,33 +1,29 @@
-/*
- * Camera.cpp
- *
- *  Created on: Mar 4, 2016
- *      Author: Gearhead
- */
+#include "Camera.h"
 
-#include <Camera.h>
+std::unordered_map<std::string, IMAQdxCameraInformation> Camera::camInfo;
+uint16_t Camera::cameraCount;
 
-Camera* Camera::GetInstance() {
-	if (instance == nullptr) {
-			instance = new Camera();
-	}
-	return instance;
-}
-
-void Camera::ValueChanged(ITable* source, llvm::StringRef key,
-                            std::shared_ptr<nt::Value> value, bool isNew) {
-	if (key == "camera.brightness" ||
-			key == "camera.exposure" ||
-			key == "camera.whitebalance") {
+void Camera::ValueChanged(ITable* source, llvm::StringRef key, std::shared_ptr<nt::Value> value, bool isNew) {
+	std::string keyBase = std::string("camera.") + m_name;
+	if (key == keyBase + ".brightness" ||
+			key == keyBase + ".exposure" ||
+			key == keyBase + ".whitebalance") {
 		UpdateSettings();
 	}
+	//if (key == keyBase + ".dump" && value->GetBoolean()) {
+		//DumpAttrs();
+	//}
 }
 
-Camera::Camera() {
-	camera = std::make_shared<USBCamera>("cam0", true);
-	camera->OpenCamera();
-	server = CameraServer::GetInstance();
-	server->StartAutomaticCapture(camera);
+Camera::Camera(std::string name) : USBCamera(name, true) {
+	EnumerateCameras();
+
+	if (strstr(camInfo[name].ModelName, "LifeCam") != nullptr) {
+		SetSize(320, 240);
+		SetFPS(15);
+	}
+
+	OpenCamera();
 	m_table = NetworkTable::GetTable("Preferences");
 	m_table->AddTableListener(this);
 	UpdateSettings();
@@ -36,26 +32,44 @@ Camera::Camera() {
 Camera::~Camera() {
 	m_table->RemoveTableListener(this);
 }
+
+std::string Camera::GetName() {
+	return m_name;
+}
+
 void Camera::UpdateSettings() {
 	auto pref = Preferences::GetInstance();
 
-	std::cout << "Updating camera settings: Brightness = " << pref->GetInt("camera.brightness", 80);
-	std::cout << ", WhiteBalance = " << pref->GetInt("camera.whitebalance", -1);
-	std::cout << ", Exposure = " << pref->GetInt("camera.exposure", -1) << std::endl;
-	camera->SetBrightness(pref->GetInt("camera.brightness", 80));
-	auto value = pref->GetInt("camera.whitebalance", -1);
+	std::string keyBase = std::string("camera.") + m_name;
+	std::cout << "Updating camera settings of " << m_name << ": Brightness = " << pref->GetInt(keyBase + ".brightness", 80);
+	std::cout << ", WhiteBalance = " << pref->GetInt(keyBase + ".whitebalance", -1);
+	std::cout << ", Exposure = " << pref->GetInt(keyBase + ".exposure", -1) << std::endl;
+	SetBrightness(pref->GetInt(keyBase + ".brightness", 80));
+	auto value = pref->GetInt(keyBase + ".whitebalance", -1);
 	if (value == -1) {
-		camera->SetWhiteBalanceAuto();
+		SetWhiteBalanceAuto();
 	} else {
-		camera->SetWhiteBalanceManual(value);
+		SetWhiteBalanceManual(value);
 	}
-	value = pref->GetInt("camera.exposure", -1);
+	value = pref->GetInt(keyBase + ".exposure", -1);
 	if (value == -1) {
-		camera->SetExposureAuto();
+		SetExposureAuto();
 	} else {
-		camera->SetExposureManual(value);
+		SetExposureManual(value);
 	}
 }
 
-Camera* Camera::instance = nullptr;
-
+int Camera::EnumerateCameras() {
+	if (cameraCount > 0) { return cameraCount; }
+	IMAQdxCameraInformation cams[6];
+	cameraCount = 0;
+	uInt32 count = sizeof(cams) / sizeof(cams[0]);
+	IMAQdxEnumerateCameras(cams, &count, true);
+	cameraCount = count;
+	printf("Cameras (%u):\n", (unsigned int)cameraCount);
+	for (uInt32 i=0; i != cameraCount; i++) {
+		printf("  %s / %s / %s\n", cams[i].VendorName, cams[i].ModelName, cams[i].InterfaceName);
+		camInfo[std::string(cams[i].InterfaceName)] = cams[i];
+	}
+	return cameraCount;
+}
