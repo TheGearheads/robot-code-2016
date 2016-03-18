@@ -5,6 +5,8 @@
 #include "Intake.h"
 #include "Shooter.h"
 #include "CameraSystem.h"
+#include "LEDSystem.h"
+#include "TestSubsystem.h"
 
 class Robot: public IterativeRobot
 {
@@ -16,14 +18,17 @@ private:
 	Shooter* shooter;
 	Intake* intake;
 	CameraSystem* camSystem;
+	TestSubsystem* testSystem;
 
 	void RobotInit() {
+		LEDSystem::GetInstance();
 		stick = Joystick::GetStickForPort(0);
 		auton = Auton::GetInstance();
 		drive = Drive::GetInstance();
 		shooter = Shooter::GetInstance();
 		intake = Intake::GetInstance();
 		camSystem = CameraSystem::GetInstance();
+		testSystem = TestSubsystem::GetInstance();
 		//lw->SetEnabled(true);
 	}
 
@@ -50,7 +55,9 @@ private:
 	}
 
 	void TestPeriodic() {
-		lw->Run();
+		shooter->periodic();
+		camSystem->periodic();
+		testSystem->periodic();
 	}
 };
 

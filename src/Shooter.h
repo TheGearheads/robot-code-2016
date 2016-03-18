@@ -39,6 +39,12 @@ public:
 	void intake(bool on); // automatically lower shooter and reverse wheels
 	void periodic();
 	void enable(bool on);
+	bool isEnabled() { return shootState; }
+	bool isIntaking() { return intakeState; }
+	bool isFiring() { return piston->Get() == DoubleSolenoid::kForward; }
+	bool getLimitTop() { return pivot->IsFwdLimitSwitchClosed(); }
+	bool getLimitBottom() { return pivot->IsRevLimitSwitchClosed(); }
+	double getPosition();
 
 	static Shooter* GetInstance();
 };

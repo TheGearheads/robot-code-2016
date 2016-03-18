@@ -29,6 +29,7 @@ public:
 	void periodic();
 	void roll(bool on);
 	void lift(bool position);
+	bool isDown() { return pivotState; }
 	static Intake* GetInstance();
 };
 

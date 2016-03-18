@@ -27,6 +27,7 @@ Shooter::Shooter() {
 	right->SetInverted(true);
 	pivot->SetInverted(true);
 	stick = Joystick::GetStickForPort(1);
+	prevPos = getAngle();
 }
 
 void Shooter::setSpeed(float speed) {
@@ -36,6 +37,7 @@ void Shooter::setSpeed(float speed) {
 
 void Shooter::move(float speed) {
 	auto pref = Preferences::GetInstance();
+	pivot->SetControlMode(CANTalon::ControlMode::kPercentVbus);
 	pivot->Set(pref->GetFloat("shooter.pivot.modifier", 0.3f) * speed);
 }
 
@@ -77,7 +79,7 @@ void Shooter::periodic() {
 			moveTo(0);
 		}
 		if (stick->GetRawButton(6)) {
-			moveTo(40);
+			moveTo(42);
 		}
 		if (!shootButtonPrev && stick->GetRawButton(2) ){
 			enable(!shootState);
@@ -102,9 +104,7 @@ void Shooter::periodic() {
 		setSpeed(0);
 	}
 
-
-	table->PutNumber("pivot/pot", pivot->GetPosition());
-	table->PutNumber("angle", getAngle());
+	getAngle();
 	table->PutBoolean("state", shootState);
 	table->PutBoolean("fire", piston->Get() == DoubleSolenoid::kForward);
 	table->PutNumber("pivot/bus", pivot->GetBusVoltage());
@@ -130,8 +130,17 @@ double Shooter::angleToPot(double angle) {
 	return (angle - angle_min) * (pot_max - pot_min) / (angle_max - angle_min) + pot_min;
 }
 
+double Shooter::getPosition() {
+	return pivot->GetPosition();
+}
+
 double Shooter::getAngle() {
-	return potToAngle(pivot->GetPosition());
+	auto table = NetworkTable::GetTable("Shooter");
+	auto position = pivot->GetPosition();
+	auto angle =  potToAngle(position);
+	table->PutNumber("angle", angle);
+	table->PutNumber("pivot/pot", position);
+	return angle;
 }
 
 void Shooter::fire() {
